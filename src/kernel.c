@@ -3,6 +3,7 @@
 #include "trap.h"
 #include "scheduler.h"
 #include "timer.h"
+#include "fs.h"
 
 void kmain(void) {
     uart_init();
@@ -14,14 +15,17 @@ void kmain(void) {
 
     scheduler_init();
     timer_init();
+    fs_init();
 
     extern void shell_run(void);
     scheduler_spawn(shell_run);
 
     extern void user_prog_hello(void);
     extern void user_prog_echo(void);
+    extern void user_prog_fstest(void);
     scheduler_spawn(user_prog_hello);
     scheduler_spawn(user_prog_echo);
+    scheduler_spawn(user_prog_fstest);
 
     scheduler_run();
 
