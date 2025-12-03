@@ -1,7 +1,7 @@
 #include "uart.h"
 #include "fs.h"
 #include "syscall.h"
-#include <string.h>
+#include "string.h"
 #include <stdint.h>
 
 #define LINE_MAX 80
@@ -52,17 +52,13 @@ void shell_run(void) {
                     uart_puts("Error: file not found\n");
                 } else {
                     char buf[256];
-                    int total_read = 0;
-                    while (1) {
-                        int n = syscall(5, fd, (uint64_t)(buf + total_read), 256 - total_read);  // SYS_READ
-                        if (n <= 0) break;
-                        total_read += n;
-                        if (total_read >= 255) break;
+                    int n;
+                    while ((n = syscall(5, fd, (uint64_t)buf, sizeof(buf) - 1)) > 0) {
+                        buf[n] = 0;
+                        uart_puts(buf);
                     }
-                    buf[total_read] = 0;
-                    uart_puts(buf);
-                    if (total_read > 0 && buf[total_read - 1] != '\n') {
-                        uart_puts("\n");
+                    if (n < 0) {
+                        uart_puts("Error: read failed\n");
                     }
                     syscall(7, fd, 0, 0);  // SYS_CLOSE
                 }

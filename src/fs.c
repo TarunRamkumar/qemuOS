@@ -25,9 +25,14 @@ static file_t files[MAX_FILES];
 static fd_entry_t fd_table[MAX_OPEN_FDS];
 static int next_fd = 3;  // Start at 3 (0,1,2 reserved for stdin, stdout, stderr)
 
+// File data storage pool (one buffer per file slot)
+static char file_data_pool[MAX_FILES][MAX_FILE_SIZE];
+static int pool_allocated[MAX_FILES];  // Track which slots are allocated
+
 // External program data (for initial files)
 extern const char _prog_hello[];
 extern const char _prog_echo[];
+
 
 // Initialize file system
 int fs_init(void) {
@@ -204,7 +209,7 @@ int fs_open(const char *name, int flags) {
     }
     
     // Allocate FD number
-    int fd = next_fd++;
+    next_fd++;
     if (next_fd >= MAX_OPEN_FDS) {
         next_fd = 3;  // Wrap around (skip 0,1,2)
     }

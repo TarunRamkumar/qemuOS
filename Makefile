@@ -3,7 +3,7 @@ CROSS = riscv64-unknown-elf-
 CC = $(CROSS)gcc
 LD = $(CROSS)ld
 OBJCOPY = $(CROSS)objcopy
-CFLAGS = -march=rv64imac_zicsr -mabi=lp64 -mcmodel=medany -ffreestanding -O2 -g -Wall -Wextra
+CFLAGS = -march=rv64imac -mabi=lp64 -mcmodel=medany -ffreestanding -O2 -g -Wall -Wextra
 LDFLAGS = -T link.ld
 
 SRCDIR = src

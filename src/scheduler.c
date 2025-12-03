@@ -1,6 +1,6 @@
 #include "scheduler.h"
 #include "uart.h"
-#include <string.h>
+#include "string.h"
 
 extern void context_switch(uint64_t*, uint64_t*);
 
