@@ -4,7 +4,8 @@ CC = $(CROSS_PREFIX)gcc
 LD = $(CROSS_PREFIX)ld
 OBJCOPY = $(CROSS_PREFIX)objcopy
 QEMU ?= qemu-system-riscv64
-CFLAGS = -march=rv64imac -mabi=lp64 -mcmodel=medany -ffreestanding -O0 -g -Wall -Wextra
+# Explicitly include Zicsr/Zifencei since newer toolchains split these from the base ISA
+CFLAGS = -march=rv64imac_zicsr_zifencei -mabi=lp64 -mcmodel=medany -ffreestanding -O0 -g -Wall -Wextra
 LDFLAGS = -T link.ld
 SRCDIR = src
 BUILD = build

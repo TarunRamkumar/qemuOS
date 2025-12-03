@@ -16,7 +16,7 @@ qemuOS is a minimal operating system kernel designed to run on RISC-V hardware (
 ## Architecture
 
 ### Target Platform
-- **Architecture**: RISC-V 64-bit (RV64IMAC with Zicsr extension)
+- **Architecture**: RISC-V 64-bit (RV64IMAC with Zicsr/Zifencei extensions)
 - **ABI**: LP64
 - **Memory Model**: Medium-any code model
 - **Boot Address**: 0x80200000
@@ -30,6 +30,9 @@ The project uses a Makefile-based build system with RISC-V cross-compilation too
 ### Prerequisites
 
 To build and run qemuOS locally you need a RISC-V cross toolchain and QEMU's RISC-V system emulator.
+
+The kernel uses CSR instructions and fence semantics that newer toolchains place behind the `Zicsr` and `Zifencei` extensions, so
+ensure your compiler supports these (GCC 12+ typically does) or adjust `-march` in the Makefile accordingly.
 
 On Debian/Ubuntu systems:
 
