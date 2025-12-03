@@ -16,7 +16,7 @@ qemuOS is a minimal operating system kernel designed to run on RISC-V hardware (
 ## Architecture
 
 ### Target Platform
-- **Architecture**: RISC-V 64-bit (RV64IMAC with Zicsr extension)
+- **Architecture**: RISC-V 64-bit (RV64IMAC with Zicsr/Zifencei extensions)
 - **ABI**: LP64
 - **Memory Model**: Medium-any code model
 - **Boot Address**: 0x80200000
@@ -26,6 +26,40 @@ The project uses a Makefile-based build system with RISC-V cross-compilation too
 - Compiler: `riscv64-unknown-elf-gcc`
 - Linker: `riscv64-unknown-elf-ld`
 - Build artifacts are placed in the `build/` directory
+
+### Prerequisites
+
+To build and run qemuOS locally you need a RISC-V cross toolchain and QEMU's RISC-V system emulator.
+
+The kernel uses CSR instructions and fence semantics that newer toolchains place behind the `Zicsr` and `Zifencei` extensions, so
+ensure your compiler supports these (GCC 12+ typically does) or adjust `-march` in the Makefile accordingly.
+
+On Debian/Ubuntu systems:
+
+```
+sudo apt-get install qemu-system-misc gcc-riscv64-unknown-elf binutils-riscv64-unknown-elf
+```
+
+If your toolchain uses a different prefix, export it before building (for example when using a custom installation under `/opt/riscv`):
+
+```
+export CROSS_PREFIX="/opt/riscv/bin/riscv64-unknown-elf-"
+```
+
+You can also override the QEMU binary if it lives outside your PATH:
+
+```
+export QEMU=/path/to/qemu-system-riscv64
+```
+
+### Build & Run
+
+```
+make            # builds build/kernel.elf
+make run        # launches QEMU with the built kernel
+```
+
+The Makefile now checks for both the RISC-V compiler and QEMU binary and will print a helpful message if either is missing.
 
 ## Components
 
