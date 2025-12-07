@@ -2,9 +2,12 @@
 .globl trap_vector
 .type trap_vector, @function
 
+# trap_vector is the entry point for all traps (interrupts, exceptions, syscalls)
 trap_vector:
+    # Allocate space on the stack for the trap frame to save registers.
     addi sp, sp, -(8*34)
 
+    # Save general-purpose registers to the stack.
     sd ra, 0(sp)
     sd t0, 8(sp)
     sd t1, 16(sp)
@@ -34,19 +37,25 @@ trap_vector:
     sd t5, 208(sp)
     sd t6, 216(sp)
 
+    # Save control and status registers (CSRs).
+    # sepc: Supervisor Exception Program Counter (address of the trapped instruction).
     csrr t0, sepc
     sd t0, 224(sp)
+    # sstatus: Supervisor Status Register.
     csrr t0, sstatus
     sd t0, 232(sp)
 
+    # Pass a pointer to the trap frame (the stack pointer) to the C handler.
     mv a0, sp
     call handle_trap_from_asm
 
+    # Restore control and status registers from the stack.
     ld t0, 232(sp)
     csrw sstatus, t0
     ld t0, 224(sp)
     csrw sepc, t0
 
+    # Restore general-purpose registers from the stack.
     ld t6, 216(sp)
     ld t5, 208(sp)
     ld t4, 200(sp)
@@ -76,6 +85,8 @@ trap_vector:
     ld t0, 8(sp)
     ld ra, 0(sp)
 
+    # Deallocate the trap frame from the stack.
     addi sp, sp, (8*34)
 
+    # Return from the trap, resuming execution at the address in sepc.
     sret
